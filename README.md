@@ -47,5 +47,20 @@ According to the metadata, this dataset contains:
 
 ESRI grid, digital raster file (and associated files) containing wildfire hazard potential (WHP) in classes: 1) very low, 2) low, 3) moderate, 4) high, and 5) very high. In addition, non-burnable lands (6) and open water (7) are represented as separate classes.
 
-## Historical flood data
-From [FEMA](https://www.fema.gov/media-library/assets/documents/106308), [Historical Flood Risks and Costs](https://www.fema.gov/media-library-data/1493738649162-2ad83da9ad0395a0e31045c269333c55/DataVizFloodsFV3.22.2017.xlsx) (Produces file `DataVizFloodsFV3.22.2017.xlsx`)  
+## FEMA disaster data
+From [FEMA](https://www.fema.gov/media-library/assets/documents/106308), [Summary of Disaster Declarations and Grants](https://www.fema.gov/media-library-data/1493738442601-01db152481b5d3d747535ae0a1c441a6/DataVizDisasterSummariesFV12.19.2016.xlsx) (Produces file `DataVizDisasterSummariesFV12.19.2016.xlsx`)  
+See the Federal declared disasters that have occurred in your state or territory. Then view a summary of our support for fire, preparedness, mitigation, individual assistance, and public assistance grants.
+
+## Extreme weather events
+[NOAA Website](https://www.climate.gov/maps-data/dataset/severe-storms-and-extreme-events-data-table); 
+[Downloads page](https://www.ncdc.noaa.gov/stormevents/ftp.jsp);
+[Column meanings](https://www1.ncdc.noaa.gov/pub/data/swdi/stormevents/csvfiles/Storm-Data-Export-Format.pdf);
+[Data sets](https://www1.ncdc.noaa.gov/pub/data/swdi/stormevents/csvfiles/)
+
+We used data for 2018, files:
+
+`StormEvents_details-ftp_v1.0_d2018_c20190422.csv`
+
+`StormEvents_fatalities-ftp_v1.0_d2018_c20190422.csv`
+
+`StormEvents_locations-ftp_v1.0_d2018_c20190422.csv`
