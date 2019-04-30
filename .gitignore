@@ -102,3 +102,16 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# ignore images
+*.png
+*.jpg
+
+# ignore redis
+redis-stable/
+run-redis.sh
+
+# ignore virtual env
+virt
+
+/Datasets
