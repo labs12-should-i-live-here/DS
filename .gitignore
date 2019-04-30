@@ -115,3 +115,5 @@ run-redis.sh
 virt
 
 /data_local
+.DS_STORE
+*/.DS_STORE
