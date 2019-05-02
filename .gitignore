@@ -114,5 +114,6 @@ run-redis.sh
 # ignore virtual env
 virt
 
-/Datasets
-
+/data_local
+.DS_STORE
+*/.DS_STORE

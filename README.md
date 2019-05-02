@@ -48,8 +48,9 @@ According to the metadata, this dataset contains:
 ESRI grid, digital raster file (and associated files) containing wildfire hazard potential (WHP) in classes: 1) very low, 2) low, 3) moderate, 4) high, and 5) very high. In addition, non-burnable lands (6) and open water (7) are represented as separate classes.
 
 ## FEMA disaster data
-From [FEMA](https://www.fema.gov/media-library/assets/documents/106308), [Summary of Disaster Declarations and Grants](https://www.fema.gov/media-library-data/1493738442601-01db152481b5d3d747535ae0a1c441a6/DataVizDisasterSummariesFV12.19.2016.xlsx) (Produces file `DataVizDisasterSummariesFV12.19.2016.xlsx`)  
-See the Federal declared disasters that have occurred in your state or territory. Then view a summary of our support for fire, preparedness, mitigation, individual assistance, and public assistance grants.
+From [FEMA Disaster Declarations Summary](https://www.fema.gov/media-library/assets/documents/28318).
+
+FEMA Disaster Declarations Summary is a summarized dataset describing all federally declared disasters. This information begins with the first disaster declaration in 1953 and features all three disaster declaration types: major disaster, emergency and fire management assistance. The dataset includes declared recovery programs and geographic areas (county not available before 1964; Fire Management records are considered partial due to historical nature of the dataset).
 
 ## Extreme weather events
 [NOAA Website](https://www.climate.gov/maps-data/dataset/severe-storms-and-extreme-events-data-table); 
@@ -64,3 +65,16 @@ We used data for 2018, files:
 `StormEvents_fatalities-ftp_v1.0_d2018_c20190422.csv`
 
 `StormEvents_locations-ftp_v1.0_d2018_c20190422.csv`
+
+## County shapes, names, and codes
+[From this ESRI forum post](https://community.esri.com/thread/24614)
+
+
+The TIGER/Line shapefiles and related database files (.dbf) are an extract of selected geographic and cartographic information from the U.S. Census Bureau's Master Address File / Topologically Integrated Geographic Encoding and Referencing (MAF/TIGER) Database (MTDB). The MTDB represents a seamless national file with no overlaps or gaps between parts, however, each TIGER/Line shapefile is designed to stand alone as an independent data set, or they can be combined to cover the entire nation.
+
+The primary legal divisions of most states are termed counties.  In Louisiana, these divisions are known as parishes.  In Alaska, which has no counties, the equivalent entities are the organized boroughs, city and boroughs, municipalities, and for the unorganized area, census areas.  The latter are delineated cooperatively for statistical purposes by the State of Alaska and the Census Bureau.  In four states (Maryland, Missouri, Nevada, and Virginia), there are one or more incorporated places that are independent of any county organization and thus constitute primary divisions of their states.  These incorporated places are known as independent cities and are treated as equivalent entities for purposes of data presentation.  The District of Columbia and Guam have no primary divisions, and each area is considered an equivalent entity for purposes of data presentation.  The Census Bureau treats the following entities as equivalents of counties for purposes of data presentation: Municipios in Puerto Rico, Districts and Islands in American Samoa, Municipalities in the Commonwealth of the Northern Mariana Islands, and Islands in the U.S. Virgin Islands.  The entire area of the United States, Puerto Rico, and the Island Areas is covered by counties or equivalent entities.
+
+This shape file was transformed into a geoJSON file using [Mapshaper](https://mapshaper.org/).
+
+This replaces an earlier map that we tried, which had much higher resolution and therefore was much, much heavier. 
+
