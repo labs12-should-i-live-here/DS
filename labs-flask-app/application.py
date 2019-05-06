@@ -26,27 +26,37 @@ port = '5432'
 
 # Establish DB connection
 pg_conn = pg.connect(database=database, user=user, password=password,
-        host=host, port=port)
+                     host=host, port=port)
+
 
 def get_indicator_by_latlong(lat, lon, indicator_name):
     """
     Wrapper function to fetch indicator information based on lat and long
     from Azavea Climate API.
     """
-    endpoint=f'/api/climate-data/{lat}/{lon}/RCP45/indicator/{indicator_name}/'
-    
+    endpoint = f'/api/climate-data/{lat}/{lon}/'\
+               f'RCP45/indicator/{indicator_name}/'
+
     # Custom year setting
     now = datetime.datetime.now()
     year_range = str(now.year)+':'+str(2100)
-    
-    optional_parameters=f'?agg=max,avg&years={year_range}'
-    
+
+    # Maximum allowed distance (meters) to Map Cell from provided Lat + Lon
+    distance = 30000.0
+
+    # Select LOCA dataset
+    dataset = 'LOCA'
+
+    optional_parameters = f'?dataset={dataset}&distance={distance}'\
+                          f'&agg=max,avg&years={year_range}'
+
     url = baseurl+endpoint+optional_parameters
-    
+
     # Trigger the request
     response = requests.get(url, headers=header)
-    
+
     return response.ok, response.json()
+
 
 @app.route('/prediction', methods=['POST'])
 def get_prediction():
@@ -56,7 +66,7 @@ def get_prediction():
 
     NEX-GDDP dataset and climate model RCP4.5 is being used for prediction.
 
-    Input: 
+    Input:
         latitude and longitude of location of interest.
 
     Output:
@@ -76,23 +86,23 @@ def get_prediction():
         raise JsonError(description='Key Error: Key missing in the request')
 
     # Invoke Azavea Climate API
-    result = {'dry_spells' : "",
-            'extreme_cold_events': "",
-            'extreme_heat_events': "",
-            'extreme_precipitation_events': "",
-            'heat_wave_incidents': ""}
-    
+    result = {'dry_spells': "",
+              'extreme_cold_events': "",
+              'extreme_heat_events': "",
+              'extreme_precipitation_events': "",
+              'heat_wave_incidents': ""}
+
     for key in result.keys():
         ok, response = get_indicator_by_latlong(latitude, longitude, key)
-        
+
         if ok:
-            result[key]=response['data']
+            result[key] = response['data']
         else:
-            result[key]=response['detail']
+            result[key] = response['detail']
 
     return json_response(latitude=latitude,
-            longitude=longitude,
-            prediction=result)
+                         longitude=longitude,
+                         prediction=result)
 
 
 @app.route('/history', methods=['POST'])
@@ -100,23 +110,22 @@ def get_history():
     """
     Get information on historical event count for a particular county.
 
-    Input: 
+    Input:
         fipscode specific to the county.
-	startyear from which the events needs to be returned.
-	endyear till which the events needs to be returned.
-		
-	For querying a specific year startyear = endyear
+        startyear from which the events needs to be returned.
+        endyear till which the events needs to be returned.
+        For querying a specific year startyear = endyear
 
     Output:
-        Aggregated count of weather events in a paricular county by year. 	
-	1. Winter Weather.	
-	2. Storm.	
-	3. Flood.	
-	4. Fire.	
-	5. Heat 	
-	6. Drought 	
-	7. Tornado 	
-	8. Hurricane
+        Aggregated count of weather events in a paricular county by year.
+        1. Winter Weather.
+        2. Storm.
+        3. Flood.
+        4. Fire.
+        5. Heat
+        6. Drought
+        7. Tornado
+        8. Hurricane
     """
 
     data = request.get_json(force=True)
@@ -133,21 +142,21 @@ def get_history():
     WHERE fipscode={fipscode} AND year BETWEEN {startyear} AND {endyear};
     """
     pg_cur.execute(get_county_info)
-	
+
     count = pg_cur.rowcount
     if count == 0:
         # Close the cursor
         pg_cur.close()
 
         return json_response(fipscode=fipscode,
-                startyear=startyear,
-                endyear=endyear,
-                count=count)
-	
-    # Populate result    
+                             startyear=startyear,
+                             endyear=endyear,
+                             count=count)
+
+    # Populate result
     rows = pg_cur.fetchall()
     result = {}
-	
+
     for row in rows:
         # Create yearwise records
         year_record = {}
@@ -159,18 +168,19 @@ def get_history():
         year_record['drought'] = row[7]
         year_record['tornado'] = row[8]
         year_record['hurricane'] = row[9]
-        
+
         # Append to overall result by year
         result[row[0]] = year_record
-        
+
     # Close the cursor
     pg_cur.close()
 
     return json_response(fipscode=fipscode,
-            startyear=startyear,
-            endyear=endyear,
-            count=count,
-            history=result)
+                         startyear=startyear,
+                         endyear=endyear,
+                         count=count,
+                         history=result)
+
 
 @app.route('/')
 def root():
@@ -180,4 +190,5 @@ def root():
     return "Test Successful"
 
 if __name__ == '__main__':
-    application.run(debug=True)
+    application.run()
+
