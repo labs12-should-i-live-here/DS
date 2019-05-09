@@ -7,6 +7,7 @@ import os
 import psycopg2 as pg
 import requests
 
+
 # Create and configure an instance of the Flask application.
 application = app = Flask(__name__)
 FlaskJSON(app)
@@ -24,22 +25,20 @@ database = 'LiveSafeDB'
 host = 'livesafe-lab12-project.cyplld0jesr7.us-east-1.rds.amazonaws.com'
 port = '5432'
 
-# Establish DB connection
-pg_conn = pg.connect(database=database, user=user, password=password,
-                     host=host, port=port)
 
-
-def get_indicator_by_latlong(lat, lon, indicator_name):
+def get_indicator_by_latlong(lat, lon, indicator_name, years):
     """
     Wrapper function to fetch indicator information based on lat and long
     from Azavea Climate API.
     """
-    endpoint = f'/api/climate-data/{lat}/{lon}/'\
-               f'RCP45/indicator/{indicator_name}/'
+
+    endpoint = f'/api/climate-data/{lat}/{lon}'  # noqa: E999
+    endpoint += f'/RCP45/indicator/{indicator_name}/'
 
     # Custom year setting
     now = datetime.datetime.now()
-    year_range = str(now.year)+':'+str(2100)
+    final_year = min(now.year+years, 2100)
+    year_range = str(now.year)+':'+str(final_year)
 
     # Maximum allowed distance (meters) to Map Cell from provided Lat + Lon
     distance = 30000.0
@@ -47,8 +46,8 @@ def get_indicator_by_latlong(lat, lon, indicator_name):
     # Select LOCA dataset
     dataset = 'LOCA'
 
-    optional_parameters = f'?dataset={dataset}&distance={distance}'\
-                          f'&agg=max,avg&years={year_range}'
+    optional_parameters = f'?dataset={dataset}&distance={distance}'
+    optional_parameters += f'&agg=max,avg&years={year_range}'
 
     url = baseurl+endpoint+optional_parameters
 
@@ -58,19 +57,21 @@ def get_indicator_by_latlong(lat, lon, indicator_name):
     return response.ok, response.json()
 
 
-@app.route('/prediction', methods=['POST'])
-def get_prediction():
+@app.route('/allpredictions', methods=['POST'])
+def get_all_predictions():
     """
     Get predictions based on latitude and longitude of a given location.
     The predictions are fetched using Azavea Climate API.
 
-    NEX-GDDP dataset and climate model RCP4.5 is being used for prediction.
+    LOCA dataset and climate model RCP4.5 is being used for prediction.
 
     Input:
         latitude and longitude of location of interest.
+        years to specify the range of years for fetching the predictions.
 
     Output:
-        Count of extreme climate incidents from present year till 2100.
+        Count of extreme climate incidents from present year till
+        years range or 2100.
         1. Dry Spells.
         2. Extreme Cold Events.
         3. Extreme Heat Events.
@@ -82,6 +83,7 @@ def get_prediction():
     try:
         latitude = data['latitude']
         longitude = data['longitude']
+        years = data['years']
     except (KeyError):
         raise JsonError(description='Key Error: Key missing in the request')
 
@@ -93,12 +95,61 @@ def get_prediction():
               'heat_wave_incidents': ""}
 
     for key in result.keys():
-        ok, response = get_indicator_by_latlong(latitude, longitude, key)
+        ok, response = get_indicator_by_latlong(latitude, longitude,
+                                                key, years)
 
         if ok:
             result[key] = response['data']
         else:
             result[key] = response['detail']
+
+    return json_response(latitude=latitude,
+                         longitude=longitude,
+                         prediction=result)
+
+
+@app.route('/prediction', methods=['POST'])
+def get_prediction():
+    """
+    Get specific indicator prediction based on latitude and longitude
+    of a given location. The prediction is fetched using Azavea Climate API.
+
+    LOCA dataset and climate model RCP4.5 is being used for prediction.
+
+    Input:
+        latitude and longitude of location of interest.
+        years to specify the range of years for fetching the prediction.
+        indicator to specify the name of indicator of prediction.
+        1. dry_spells - Dry Spells.
+        2. extreme_cold_events - Extreme Cold Events.
+        3. extreme_heat_events - Extreme Heat Events.
+        4. extreme_precipitation_events - Extreme Precipitation Events.
+        5. heat_wave_incidents - Heat Wave Incidents.
+
+    Output:
+        Count of extreme climate incidents from present year till
+        years range or 2100.
+    """
+
+    data = request.get_json(force=True)
+    try:
+        latitude = data['latitude']
+        longitude = data['longitude']
+        years = data['years']
+        indicator = data['indicator']
+    except (KeyError):
+        raise JsonError(description='Key Error: Key missing in the request')
+
+    # Invoke Azavea Climate API
+    result = {}
+
+    ok, response = get_indicator_by_latlong(latitude, longitude,
+                                            indicator, years)
+
+    if ok:
+        result[indicator] = response['data']
+    else:
+        result[indicator] = response['detail']
 
     return json_response(latitude=latitude,
                          longitude=longitude,
@@ -127,6 +178,10 @@ def get_history():
         7. Tornado
         8. Hurricane
     """
+
+    # Establish DB connection
+    pg_conn = pg.connect(database=database, user=user, password=password,
+                         host=host, port=port)
 
     data = request.get_json(force=True)
     try:
@@ -189,6 +244,6 @@ def root():
     """
     return "Test Successful"
 
+
 if __name__ == '__main__':
     application.run()
-
