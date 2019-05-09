@@ -173,10 +173,11 @@ def get_history():
         2. Storm.
         3. Flood.
         4. Fire.
-        5. Heat
-        6. Drought
-        7. Tornado
-        8. Hurricane
+        5. Heat.
+        6. Drought.
+        7. Tornado.
+        8. Hurricane.
+        9. Earthquake.
     """
 
     # Establish DB connection
@@ -223,6 +224,7 @@ def get_history():
         year_record['drought'] = row[7]
         year_record['tornado'] = row[8]
         year_record['hurricane'] = row[9]
+        year_record['earthquake'] = row[10]
 
         # Append to overall result by year
         result[row[0]] = year_record
