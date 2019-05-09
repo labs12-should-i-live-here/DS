@@ -116,7 +116,7 @@ virt
 
 /data_local
 .DS_STORE
-*/.DS_STORE
+**/.DS_STORE
 
 # ignore elasticbeanstalk config
 .ebextensions
