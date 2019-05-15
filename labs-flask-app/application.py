@@ -239,6 +239,65 @@ def get_history():
                          history=result)
 
 
+@app.route('/riskiness', methods=['POST'])
+def get_risk():
+    """
+    Get information on riskiness for a particular county.
+
+    Input:
+        fipscode specific to the county.
+
+    Output:
+        Overall riskiness indicator of the county
+        1. Total Events - The total number of natural disaster events.
+        2. Category - The category of riskiness [0-5]
+        3. Category Label - The label matching Category
+            Very Low Risk
+            Low Risk
+            Medium Risk
+            High Risk
+            Very High Risk
+            Extremely High Risk
+    """
+    # Establish DB connection
+    pg_conn = pg.connect(database=database, user=user, password=password,
+                         host=host, port=port)
+
+    data = request.get_json(force=True)
+    try:
+        fipscode = data['fipscode']
+    except (KeyError):
+        raise JsonError(description='Key Error: Key missing in the request')
+
+    # Invoke DB query
+    pg_cur = pg_conn.cursor()
+    get_county_risk_info = f"""SELECT * FROM risk_table
+    WHERE fipscode={fipscode};
+    """
+    pg_cur.execute(get_county_risk_info)
+
+    count = pg_cur.rowcount
+    if count == 0:
+        # Close the cursor
+        pg_cur.close()
+
+        return json_response(fipscode=fipscode,
+                             description='No matching information found')
+
+    # Populate result
+    row = pg_cur.fetchone()
+    result = {}
+    result['totalevents'] = row[1]
+    result['category'] = row[2]
+    result['categorylabel'] = row[3]
+
+    # Close the cursor
+    pg_cur.close()
+
+    return json_response(fipscode=fipscode,
+                         risk=result)
+
+
 @app.route('/')
 def root():
     """
