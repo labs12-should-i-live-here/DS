@@ -67,7 +67,7 @@ We used data for 2018, files:
 `StormEvents_locations-ftp_v1.0_d2018_c20190422.csv`
 
 ## County shapes, names, and codes
-[From this ESRI forum post](https://community.esri.com/thread/24614)
+[From this ESRI forum post](https://community.esri.com/thread/24614) 
 
 
 The TIGER/Line shapefiles and related database files (.dbf) are an extract of selected geographic and cartographic information from the U.S. Census Bureau's Master Address File / Topologically Integrated Geographic Encoding and Referencing (MAF/TIGER) Database (MTDB). The MTDB represents a seamless national file with no overlaps or gaps between parts, however, each TIGER/Line shapefile is designed to stand alone as an independent data set, or they can be combined to cover the entire nation.
