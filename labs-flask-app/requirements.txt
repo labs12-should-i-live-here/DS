@@ -4,7 +4,7 @@ blessed==1.15.0
 botocore==1.12.135
 cached-property==1.5.1
 cement==2.8.2
-certifi==2019.3.9
+certifi==2022.12.7
 cffi==1.12.3
 chardet==3.0.4
 Click==7.0
